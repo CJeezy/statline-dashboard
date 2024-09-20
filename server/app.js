@@ -12,7 +12,11 @@ app.use(express.json({ extended: false }));
 
 // Define Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/riot', require('./routes/riot'));
+const riotRoutes = require('./routes/riotRoutes');
+
+// Add this line to the route section
+app.use('/api/riot', riotRoutes);
+
 
 // Server static assets in production
 if (process.env.NODE_ENV === 'production') {

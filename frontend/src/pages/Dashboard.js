@@ -1,39 +1,42 @@
 // src/pages/Dashboard.js
 import React, { useState } from 'react';
-import { getSummonerData } from '../services/riotService';
+import { fetchSummonerData } from '../services/riotService';
 
 const Dashboard = () => {
   const [summonerName, setSummonerName] = useState('');
   const [summonerData, setSummonerData] = useState(null);
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFetchData = async () => {
     try {
-      const data = await getSummonerData(summonerName);
-      setSummonerData(data);
+      const data = await fetchSummonerData(summonerName);
+      setSummonerData(data); // Store the fetched data
+      setError('');
     } catch (err) {
-      console.error(err);
+      setError('Failed to fetch data');
     }
   };
 
   return (
     <div>
-      <h1>League of Legends Stats</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={summonerName}
-          onChange={(e) => setSummonerName(e.target.value)}
-          placeholder="Enter Summoner Name"
-          required
-        />
-        <button type="submit">Get Stats</button>
-      </form>
+      <h1>League of Legends Dashboard</h1>
+
+      <input
+        type="text"
+        placeholder="Enter Summoner Name"
+        value={summonerName}
+        onChange={(e) => setSummonerName(e.target.value)}
+      />
+      <button onClick={handleFetchData}>Get Summoner Data</button>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
       {summonerData && (
         <div>
-          <h2>Summoner Name: {summonerData.name}</h2>
-          <p>Level: {summonerData.summonerLevel}</p>
-          {/* Add more stats as needed */}
+          <h2>Summoner Data:</h2>
+          <p><strong>Summoner Name:</strong> {summonerData.name}</p>
+          <p><strong>Level:</strong> {summonerData.summonerLevel}</p>
+          <p><strong>Account ID:</strong> {summonerData.accountId}</p>
         </div>
       )}
     </div>
