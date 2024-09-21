@@ -1,23 +1,21 @@
-// src/pages/Login.js
+// frontend/src/pages/Login.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login } from '../services/authService';
+import axios from 'axios';
 
 const Login = () => {
-  const [user, setUser] = useState({ email: '', password: '' });
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
-
-  const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await login(user);
-      navigate('/dashboard'); // Use navigate instead of history.push
-    } catch (err) {
-      console.error(err);
+      const res = await axios.post('/api/auth/login', { email, password });
+      localStorage.setItem('token', res.data.token);  // Store JWT token in localStorage
+      setMessage('User logged in successfully');
+    } catch (error) {
+      setMessage('Login failed');
     }
   };
 
@@ -27,22 +25,19 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="email"
-          name="email"
-          value={user.email}
-          onChange={handleChange}
           placeholder="Email"
-          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
-          name="password"
-          value={user.password}
-          onChange={handleChange}
           placeholder="Password"
-          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
       </form>
+      {message && <p>{message}</p>}
     </div>
   );
 };
